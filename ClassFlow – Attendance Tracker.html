@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClassFlow – Attendance Tracker</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#070815;--fg:#f0f2ff;--mut:#9aa1c9;--glass:rgba(255,255,255,.07);--bd:rgba(255,255,255,.14);--ok:#2de2a0;--no:#ff5d7a;--wait:#ffc857;--a1:#7c5cff;--a2:#00d4ff}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef0fb;--fg:#13163a;--mut:#5b6190;--glass:rgba(255,255,255,.7);--bd:rgba(20,22,60,.12)}}
+:root[data-theme="light"]{--bg:#eef0fb;--fg:#13163a;--mut:#5b6190;--glass:rgba(255,255,255,.7);--bd:rgba(20,22,60,.12)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:90px}
+.aur{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.aur i{position:absolute;width:60vmax;height:60vmax;border-radius:50%;filter:blur(90px);opacity:.35;animation:fl 18s ease-in-out infinite alternate}
+.aur i:nth-child(1){background:#7c5cff;left:-20vmax;top:-20vmax}
+.aur i:nth-child(2){background:#00d4ff;right:-25vmax;top:20vmax;animation-delay:-6s}
+.aur i:nth-child(3){background:#ff4fa3;left:10vmax;bottom:-35vmax;animation-delay:-11s}
+@keyframes fl{to{transform:translate(8vmax,6vmax) scale(1.2)}}
+.wrap{max-width:760px;margin:0 auto;padding:18px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.brand{font-weight:800;font-size:22px;letter-spacing:-.03em}.brand b{background:linear-gradient(90deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.g{background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:20px}
+button{font:inherit;color:var(--fg);cursor:pointer}
+.ib{background:var(--glass);border:1px solid var(--bd);border-radius:999px;padding:8px 14px;font-size:13px}
+.hero{display:flex;gap:18px;align-items:center;padding:20px;margin:16px 0}
+.ring{position:relative;width:120px;height:120px;flex:none}
+.ring svg{transform:rotate(-90deg)}.ring .n{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-weight:800;font-size:26px;line-height:1}
+.ring small{display:block;font-size:11px;font-weight:500;color:var(--mut);margin-top:3px}
+.tix{display:grid;gap:10px;flex:1}
+.tk{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:14px;border:1px dashed var(--bd);position:relative}
+.tk:before,.tk:after{content:"";position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:var(--bg);transform:translateY(-50%)}
+.tk:before{left:-7px}.tk:after{right:-7px}
+.tk b{font-size:24px}.tk span{font-size:12px;color:var(--mut);letter-spacing:.06em;text-transform:uppercase}
+.tk.p{border-color:var(--ok)}.tk.p b{color:var(--ok)}.tk.a{border-color:var(--no)}.tk.a b{color:var(--no)}
+.nav{display:flex;align-items:center;justify-content:space-between;margin:6px 0 14px}
+.nav h2{margin:0;font-size:20px;text-align:center}.nav small{display:block;color:var(--mut);font-weight:500;font-size:13px}
+.card{display:flex;gap:14px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden;transition:.3s}
+.card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
+.card.live{box-shadow:0 0 0 1.5px var(--c),0 10px 40px -10px var(--c)}
+.tm{width:66px;flex:none;font-size:13px;color:var(--mut);line-height:1.5}.tm b{color:var(--fg);font-size:15px}
+.ci{flex:1;min-width:0}.ci h3{margin:0 0 4px;font-size:18px}.ci h3 em{font-style:normal;font-size:10px;letter-spacing:.1em;background:var(--c);color:#fff;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:middle}
+.ci p{margin:0;color:var(--mut);font-size:13px}
+.st{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+.s-p{background:#2de2a025;color:var(--ok)}.s-a{background:#ff5d7a25;color:var(--no)}.s-w{background:#ffc85730;color:var(--wait);animation:pu 1.4s infinite}.s-u{background:var(--glass);color:var(--mut)}.s-l{background:var(--c);color:#fff}
+@keyframes pu{50%{opacity:.5}}
+.act{display:flex;gap:8px;margin-top:12px}
+.act button{flex:1;padding:10px;border-radius:12px;border:1px solid var(--bd);background:var(--glass);font-weight:700;transition:.2s}
+.act .y:hover,.act .y.on{background:var(--ok);color:#042;border-color:var(--ok)}.act .n:hover,.act .n.on{background:var(--no);color:#fff;border-color:var(--no)}
+.hol{padding:50px 20px;text-align:center}.hol div{font-size:54px}.hol p{color:var(--mut)}
+.wk{display:grid;grid-template-columns:repeat(5,minmax(135px,1fr));gap:10px;overflow-x:auto;padding-bottom:6px}
+.col{padding:10px}.col h4{margin:0 0 8px;font-size:14px}.col.td{box-shadow:0 0 0 1.5px var(--a2)}
+.mb{border-left:4px solid var(--c);background:var(--glass);border-radius:10px;padding:8px;margin-bottom:8px;font-size:12px;position:relative}
+.mb b{display:block;font-size:13px}.mb span{color:var(--mut)}.mb i{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--bd)}
+.mb i.p{background:var(--ok)}.mb i.a{background:var(--no)}
+.sub{padding:14px 16px;margin-bottom:10px}.sub .r{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px}
+.bar{height:9px;border-radius:9px;background:var(--bd);overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--c),var(--a2));border-radius:9px;transition:width .8s}
+.ed{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;margin-bottom:8px;border-left:5px solid var(--c)}
+.ed div p{margin:2px 0 0;color:var(--mut);font-size:12px}.ed button{padding:6px 11px;border-radius:9px;border:1px solid var(--bd);background:var(--glass);font-size:12px;margin-left:6px}
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 14px);display:flex;gap:4px;padding:6px;z-index:10}
+.dock button{border:0;background:transparent;padding:10px 16px;border-radius:16px;font-size:13px;font-weight:600;color:var(--mut)}
+.dock button.on{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff}
+#toasts{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:0;right:0;z-index:30;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 12px;pointer-events:none}
+.toast{pointer-events:auto;max-width:420px;width:100%;padding:14px;animation:dn .4s}.toast p{margin:0 0 10px;font-size:14px}.toast div{display:flex;gap:8px}.toast button{flex:1;padding:9px;border-radius:10px;border:1px solid var(--bd);background:var(--glass);font-weight:700}
+@keyframes dn{from{transform:translateY(-30px);opacity:0}}
+#md{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:40}#md.o{display:flex}
+.sheet{background:var(--bg);border:1px solid var(--bd);width:min(520px,100%);border-radius:24px 24px 0 0;padding:20px 20px calc(env(safe-area-inset-bottom,0px) + 20px);max-height:92vh;overflow:auto}
+.sheet h3{margin:0 0 12px}.sheet label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}
+.sheet input,.sheet select{width:100%;padding:11px;border-radius:12px;border:1px solid var(--bd);background:var(--glass);color:var(--fg);font:inherit}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sheet .row{display:flex;gap:10px;margin-top:18px}.sheet .row button{flex:1;padding:12px;border-radius:12px;border:1px solid var(--bd);background:var(--glass);font-weight:700}
+.sheet .row .pr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:0}
+.note{font-size:12px;color:var(--mut);margin-top:14px;line-height:1.5}
+@media(max-width:480px){.hero{flex-direction:column}.tm{width:58px}}
+</style>
+</head>
+<body>
+<div class="aur"><i></i><i></i><i></i></div>
+<div id="toasts"></div>
+<div class="wrap">
+  <div class="top"><div class="brand">Class<b>Flow</b></div><div><button class="ib" id="nb">🔔 Enable alerts</button> <button class="ib" id="th">◐</button></div></div>
+  <div id="app"></div>
+</div>
+<div class="dock g" id="dock"><button data-t="today" class="on">Today</button><button data-t="week">Week</button><button data-t="stats">Stats</button><button data-t="edit">Edit</button></div>
+<div id="md"><div class="sheet" id="sh"></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const DEF=[
+[1,"08:00","10:00","DEC","U14M"],
+[2,"09:00","11:00","NT","U14M"],[2,"11:00","13:00","SS","U14M"],[2,"14:30","16:30","HSS","L15S"],
+[3,"08:00","10:00","DEC","U14M"],[3,"11:00","13:00","NT","U14M"],[3,"14:30","17:30","DEC LAB","SECS 104"],
+[4,"08:00","09:00","IEDA","U14M"],[4,"09:00","11:00","SS","U14M"],[4,"11:00","13:00","HSS","L15S"],[4,"14:30","17:30","SS LAB","SECS A 309"],
+[5,"09:00","13:00","IEDA LAB","(SECS 304 & SECS B-308) or (U14M)"]
+].map((a,i)=>({id:"c"+i,day:a[0],start:a[1],end:a[2],code:a[3],room:a[4]}));
+let S={classes:DEF,att:{},notified:{}};
+try{const x=JSON.parse(localStorage.getItem("cf2")||"null");if(x&&x.classes)S=x}catch(e){}
+const save=()=>{try{localStorage.setItem("cf2",JSON.stringify(S))}catch(e){}};
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const wkey=d=>{const m=new Date(d);m.setDate(m.getDate()-((m.getDay()+6)%7));return iso(m)};
+const base=c=>c.replace(" LAB","");
+const hue=c=>{let h=0;for(const ch of base(c))h=(h*31+ch.charCodeAt(0)*7)%360;return h};
+const col=c=>`hsl(${hue(c)},85%,60%)`;
+const t12=t=>{let[h,m]=t.split(":").map(Number);const ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+String(m).padStart(2,"0")+" "+ap};
+const at=(d,t)=>new Date(iso(d)+"T"+t+":00");
+function occ(d){const w=wkey(d),dw=d.getDay();return S.classes.filter(c=>c.day===dw&&(c.wk?c.wk===w:!(c.skip||[]).includes(w))).sort((a,b)=>a.start.localeCompare(b.start))}
+const kf=(d,c)=>iso(d)+"|"+c.id;
+const getA=(d,c)=>(S.att[kf(d,c)]||"").split("|")[0];
+function mark(d,c,v){const k=kf(d,c);if(S.att[k]&&S.att[k][0]===v)delete S.att[k];else S.att[k]=v+"|"+c.code;save();render()}
+let tab="today",view=new Date();view.setHours(0,0,0,0);
+function counts(){let p=0,a=0,per={};for(const k in S.att){const[v,c]=S.att[k].split("|"),b=base(c);per[b]=per[b]||{p:0,a:0};v==="P"?(p++,per[b].p++):(a++,per[b].a++)}return{p,a,per}}
+function render(){
+ document.querySelectorAll("#dock button").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
+ const f={today:rToday,week:rWeek,stats:rStats,edit:rEdit}[tab];$("app").innerHTML=f()+(tab==="today"||tab==="stats"?"":"");
+}
+function hero(){
+ const{p,a}=counts(),tot=p+a,pc=tot?Math.round(p/tot*100):0,C=2*Math.PI*52;
+ return `<div class="g hero"><div class="ring"><svg width="120" height="120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--bd)" stroke-width="10"/><circle cx="60" cy="60" r="52" fill="none" stroke="url(#gr)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pc/100)}" style="transition:stroke-dashoffset 1s"/><defs><linearGradient id="gr"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs></svg><div class="n"><div>${tot?pc+"%":"–"}<small>attendance</small></div></div></div>
+ <div class="tix"><div class="tk p"><div><span>Present tickets</span></div><b>${p}</b></div><div class="tk a"><div><span>Absent tickets</span></div><b>${a}</b></div></div></div>`}
+function rToday(){
+ const d=view,now=new Date(),tod=iso(d)===iso(now),dw=d.getDay(),list=occ(d);
+ let h=hero()+`<div class="nav"><button class="ib" onclick="go(-1)">‹</button><h2>${DAYS[dw]}<small>${d.toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"})}${tod?" · Today":""}</small></h2><button class="ib" onclick="go(1)">›</button></div>`;
+ if(!tod)h+=`<div style="text-align:center;margin-bottom:12px"><button class="ib" onclick="goT()">Jump to today</button></div>`;
+ if(dw===0||dw===6)return h+`<div class="g hol"><div>🌴</div><h3>Weekend holiday</h3><p>No classes today. Enjoy!</p></div>`;
+ if(!list.length)return h+`<div class="g hol"><div>📭</div><h3>No classes scheduled</h3></div>`;
+ return h+list.map(c=>{
+  const s=at(d,c.start),e=at(d,c.end),m=getA(d,c),fut=d>new Date(iso(now)+"T00:00:00")&&!tod;
+  let st,live=false;
+  if(m==="P")st=`<span class="st s-p">✓ Present</span>`;else if(m==="A")st=`<span class="st s-a">✕ Absent</span>`;
+  else if(fut||(tod&&now<s))st=`<span class="st s-u">Upcoming</span>`;
+  else if(tod&&now<e){st=`<span class="st s-l">● Live now</span>`;live=true}
+  else st=`<span class="st s-w">Did you attend?</span>`;
+  const can=!(fut||(tod&&now<s));
+  return `<div class="g card${live?" live":""}" style="--c:${col(c.code)}"><div class="tm"><b>${t12(c.start).replace(" ","<br>")}</b><br>${t12(c.end)}</div><div class="ci"><h3>${c.code}${c.wk?"<em>THIS WEEK</em>":""}</h3><p>📍 ${c.room}</p>${st}${can?`<div class="act"><button class="y${m==="P"?" on":""}" onclick='mk("${c.id}","P")'>✓ Attended</button><button class="n${m==="A"?" on":""}" onclick='mk("${c.id}","A")'>✕ Absent</button></div>`:""}</div></div>`}).join("");
+}
+function mk(id,v){const c=S.classes.find(x=>x.id===id);mark(view,c,v)}
+function go(n){view=new Date(view);view.setDate(view.getDate()+n);render()}
+function goT(){view=new Date();view.setHours(0,0,0,0);render()}
+function rWeek(){
+ const m=new Date(view);m.setDate(m.getDate()-((m.getDay()+6)%7));const td=iso(new Date());
+ let h=`<div class="nav"><button class="ib" onclick="go(-7)">‹</button><h2>Week of ${m.toLocaleDateString(undefined,{day:"numeric",month:"short"})}<small>Mon – Fri · Sat & Sun holidays</small></h2><button class="ib" onclick="go(7)">›</button></div><div class="wk">`;
+ for(let i=0;i<5;i++){const d=new Date(m);d.setDate(m.getDate()+i);
+  h+=`<div class="g col${iso(d)===td?" td":""}"><h4>${DAYS[d.getDay()].slice(0,3)} ${d.getDate()}</h4>`+occ(d).map(c=>`<div class="mb" style="--c:${col(c.code)}"><i class="${getA(d,c).toLowerCase()}"></i><b>${c.code}</b><span>${t12(c.start)}–${t12(c.end)}</span></div>`).join("")+`</div>`}
+ return h+`</div><p class="note">● green = present, red = absent, grey = not marked yet.</p>`}
+function rStats(){
+ const{per}=counts();const bs=[...new Set(S.classes.map(c=>base(c.code)))];
+ return hero()+bs.map(b=>{const x=per[b]||{p:0,a:0},t=x.p+x.a,pc=t?Math.round(x.p/t*100):0;
+  return `<div class="g sub" style="--c:${col(b)}"><div class="r"><b>${b}</b><span>${x.p} present · ${x.a} absent · ${t?pc+"%":"–"}</span></div><div class="bar"><i style="width:${pc}%"></i></div></div>`}).join("")+`<div style="text-align:center;margin-top:14px"><button class="ib" onclick="clr()">Reset attendance history</button></div>`}
+function clr(){ask("Clear all present/absent records?",()=>{S.att={};S.notified={};save();render()})}
+function rEdit(){
+ let h=`<div class="nav"><h2>Edit schedule<small>Move, add or remove classes</small></h2><button class="ib" onclick="form()">＋ Add</button></div>`;
+ for(let d=1;d<=5;d++){const l=S.classes.filter(c=>c.day===d&&!c.wk).concat(S.classes.filter(c=>c.day===d&&c.wk)).sort((a,b)=>a.start.localeCompare(b.start));
+  h+=`<h4 style="margin:16px 4px 8px;color:var(--mut)">${DAYS[d]}</h4>`+(l.length?l.map(c=>`<div class="g ed" style="--c:${col(c.code)}"><div><b>${c.code}${c.wk?" · this week only":""}</b><p>${t12(c.start)} – ${t12(c.end)} · ${c.room}</p></div><div><button onclick="form('${c.id}')">Edit</button><button onclick="del('${c.id}')">🗑</button></div></div>`).join(""):`<p class="note" style="margin:0 4px">No classes</p>`)}
+ return h+`<div style="text-align:center;margin-top:20px"><button class="ib" onclick="rst()">Restore original timetable</button></div>`}
+function rst(){ask("Restore the original timetable?",()=>{S.classes=DEF.map(x=>({...x}));save();render()})}
+function del(id){ask("Delete this class?",()=>{S.classes=S.classes.filter(c=>c.id!==id);save();render()})}
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+let _ok=null;
+function ask(m,fn){_ok=fn;$("sh").innerHTML=`<h3>${m}</h3><div class="row"><button onclick="cl()">Cancel</button><button class="pr" onclick="const f=_ok;cl();if(f)f()">Confirm</button></div>`;$("md").classList.add("o")}
+function form(id){
+ const c=id?S.classes.find(x=>x.id===id):{day:1,start:"14:00",end:"16:00",code:"",room:""};
+ $("sh").innerHTML=`<h3>${id?"Edit class":"Add class"}</h3><label>Subject</label><input id="f1" value="${esc(c.code)}" placeholder="e.g. IEDA LAB"><label>Room</label><input id="f2" value="${esc(c.room)}"><label>Day</label><select id="f3">${[1,2,3,4,5].map(d=>`<option value="${d}"${d===c.day?" selected":""}>${DAYS[d]}</option>`).join("")}</select><div class="two"><div><label>Start</label><input type="time" id="f4" value="${c.start}"></div><div><label>End</label><input type="time" id="f5" value="${c.end}"></div></div>${id?`<label>Apply change</label><select id="f6"><option value="all">Permanently, every week</option><option value="wk">This week only (${wkey(view)})</option></select>`:""}<p class="note" id="er" style="color:var(--no);margin:10px 0 0"></p><div class="row"><button onclick="cl()">Cancel</button><button class="pr" onclick="sv('${id||""}')">Save</button></div><p class="note">Example: move Friday IEDA Lab to Monday 2 PM by changing Day and Start/End.</p>`;
+ $("md").classList.add("o")}
+const cl=()=>$("md").classList.remove("o");
+function sv(id){
+ const o={code:$("f1").value.trim().toUpperCase(),room:$("f2").value.trim()||"TBA",day:+$("f3").value,start:$("f4").value,end:$("f5").value};
+ if(!o.code||!o.start||!o.end||o.end<=o.start){$("er").textContent="Please enter a subject and a valid start/end time.";return}
+ if(!id)S.classes.push({id:"n"+Date.now(),...o});
+ else{const c=S.classes.find(x=>x.id===id),sc=$("f6").value;
+  if(sc==="wk"&&!c.wk){const w=wkey(view);c.skip=[...(c.skip||[]),w];S.classes.push({id:"n"+Date.now(),...o,wk:w})}else Object.assign(c,o)}
+ save();cl();render()}
+$("md").onclick=e=>{if(e.target.id==="md")cl()};
+$("dock").onclick=e=>{const t=e.target.dataset.t;if(t){tab=t;render()}};
+$("th").onclick=()=>{const r=document.documentElement,d=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.dataset.theme=d?"light":"dark"};
+// notifications
+function ntf(t,b){try{if("Notification" in window&&Notification.permission==="granted")new Notification(t,{body:b})}catch(e){}}
+$("nb").onclick=async()=>{try{const p=await Notification.requestPermission();$("nb").textContent=p==="granted"?"🔔 Alerts on":"🔕 Blocked";if(p==="granted")ntf("ClassFlow","Alerts are on!")}catch(e){$("nb").textContent="In-app alerts only"}};
+try{if(Notification.permission==="granted")$("nb").textContent="🔔 Alerts on"}catch(e){}
+function toast(id,msg,c,d){
+ const el=document.createElement("div");el.className="g toast";el.innerHTML=`<p>${msg}</p><div><button class="y">✓ Yes, attended</button><button class="n">✕ No, absent</button><button class="l">Later</button></div>`;
+ el.querySelector(".y").onclick=()=>{mark(d,c,"P");el.remove()};el.querySelector(".n").onclick=()=>{mark(d,c,"A");el.remove()};el.querySelector(".l").onclick=()=>el.remove();
+ $("toasts").appendChild(el)}
+function check(){
+ const now=new Date(),d=new Date(iso(now)+"T00:00:00");
+ for(const c of occ(d)){
+  const k=kf(d,c),s=at(d,c.start),e=at(d,c.end);
+  if(!S.notified[k+"s"]&&now>=new Date(s-10*60000)&&now<s){S.notified[k+"s"]=1;save();ntf("Starting soon: "+c.code,t12(c.start)+" · "+c.room)}
+  if(!S.notified[k+"e"]&&now>=e&&!getA(d,c)){S.notified[k+"e"]=1;save();ntf(c.code+" just ended","Did you attend? Open ClassFlow to mark it.");toast(k,`<b>${c.code}</b> (${t12(c.start)}–${t12(c.end)}) has ended.<br>Did you attend this class?`,c,d)}
+ }
+ if(tab==="today"&&iso(view)===iso(now)&&!document.querySelector("#md.o"))render()}
+render();check();setInterval(check,20000);
+</script>
+</body>
+</html>
